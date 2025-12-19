@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <ul id="menu">
+            <li><a href="#" data-page="dashboard">Dashboard</a></li>
+            <li><a href="#" data-page="personal">Personal</a></li>
+            <li><a href="#" data-page="usuarios">Usuarios</a></li>
+            <li><a href="#" data-page="productos">Productos</a></li>
+            <li><a href="#" data-page="movimientos">Movimientos</a></li>
+            <li><a href="#" data-page="log">Log</a></li>
+            <li><button id="logoutBtn">Cerrar Sesión</button></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h1>Bienvenido, <span id="userFullName"></span></h1>
+        <p>ID: <span id="userId"></span></p>
+        <p>Rol: <span id="userRole"></span></p>
+
+        <div id="content">
+            <p>Panel principal del Dashboard.</p>
+        </div>
+    </main>
+
+    <script src="../../jsfront/utils/auth.js"></script>
+    <script src="../../jsfront/utils/navbar.js"></script>
+    <script>
+        // Cargar datos del usuario
+        const nombre = localStorage.getItem("nombre") || "";
+        const apellido = localStorage.getItem("apellido") || "";
+        const idPersonal = localStorage.getItem("idPersonal") || "";
+        const rol = localStorage.getItem("rol") || "";
+
+        document.getElementById("userFullName").innerText = `${nombre} ${apellido}`;
+        document.getElementById("userId").innerText = idPersonal;
+        document.getElementById("userRole").innerText = rol;
+
+        // Logout
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.clear();
+            window.location.href = "../../index.html";
+        });
+
+        // Mostrar menú según rol
+        const menu = document.getElementById("menu");
+        if (rol === "ALMACEN") {
+            // Almacen solo ve Productos y Movimientos
+            menu.querySelectorAll("li").forEach(li => {
+                const page = li.querySelector("a")?.dataset.page;
+                if (!["productos","movimientos"].includes(page)) li.style.display = "none";
+            });
+        } else if (rol === "GERENTE") {
+            // Gerente ve Productos y Movimientos
+            menu.querySelectorAll("li").forEach(li => {
+                const page = li.querySelector("a")?.dataset.page;
+                if (!["productos","movimientos"].includes(page)) li.style.display = "none";
+            });
+        }
+    </script>
+</body>
+</html>

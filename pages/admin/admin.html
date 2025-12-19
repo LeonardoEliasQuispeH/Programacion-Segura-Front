@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard Admin</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+        .sidebar {
+            width: 220px;
+            background-color: #343a40;
+            color: white;
+            min-height: 100vh;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .user-info {
+            padding: 20px;
+            border-bottom: 1px solid #495057;
+        }
+        .card-img-top {
+            object-fit: cover;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column">
+        <div class="user-info">
+            <h5 id="userFullName">Nombre Apellido</h5>
+            <small>ID: <span id="userId"></span> | Rol: <span id="userRole"></span></small>
+        </div>
+        <a href="#" data-page="personal">Personal</a>
+        <a href="#" data-page="usuarios">Usuarios</a>
+        <a href="#" data-page="productos">Productos</a>
+        <a href="#" data-page="movimientos">Movimientos</a>
+        <a href="#" data-page="log">Log</a>
+        <a href="#" data-page="sesiones">Sesiones Activas</a>
+        <a href="#" id="logoutBtn">Cerrar Sesión</a>
+    </div>
+
+    <!-- Main content -->
+    <div class="content">
+        <h2>Panel Principal</h2>
+        <div id="contentArea" class="row">
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card text-white bg-primary h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Usuarios</h5>
+                        <p class="card-text">Gestión de usuarios del sistema.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card text-white bg-success h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Productos</h5>
+                        <p class="card-text">Gestión de productos disponibles.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card text-white bg-warning h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Movimientos</h5>
+                        <p class="card-text">Entradas y salidas de inventario.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card text-white bg-danger h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Log</h5>
+                        <p class="card-text">Registro de actividades del sistema.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card text-white bg-danger h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Sesiones</h5>
+                        <p class="card-text">Registro de actividades del sistema.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal para visualizar Personal -->
+     
+    <div class="modal fade" id="personalModal" tabindex="-1" aria-labelledby="personalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="personalModalLabel">Detalle del Personal</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="personalModalBody">
+            <!-- Aquí se cargará la información del personal -->
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- Modal para Editar Personal -->
+    <div class="modal fade" id="editPersonalModal" tabindex="-1" aria-labelledby="editPersonalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="editPersonalModalLabel">Editar Personal</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+            <div id="editPersonalAlert"></div>
+            <form id="editPersonalForm">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                <label for="editNombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="editNombre" required>
+                </div>
+                <div class="col-md-6">
+                <label for="editApellidoPaterno" class="form-label">Apellido Paterno</label>
+                <input type="text" class="form-control" id="editApellidoPaterno" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                <label for="editApellidoMaterno" class="form-label">Apellido Materno</label>
+                <input type="text" class="form-control" id="editApellidoMaterno" required>
+                </div>
+                <div class="col-md-6">
+                <label for="editDni" class="form-label">DNI</label>
+                <input type="text" class="form-control" id="editDni" required maxlength="8">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                <label for="editCelular" class="form-label">Celular</label>
+                <input type="text" class="form-control" id="editCelular" required maxlength="9">
+                </div>
+                <div class="col-md-6">
+                <label for="editCorreo" class="form-label">Correo</label>
+                <input type="email" class="form-control" id="editCorreo" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="editUrlImg" class="form-label">URL Imagen (opcional)</label>
+                <input type="text" class="form-control mb-2" id="editUrlImg" placeholder="Pegar URL si no subes archivo">
+                <input type="file" class="form-control" id="editFileImg" accept=".jpg,.jpeg,.png">
+                <img id="editPreviewImg" src="" class="img-fluid rounded mt-2" alt="Preview">
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Modal Añadir Personal -->
+    <div class="modal fade" id="addPersonalModal" tabindex="-1" aria-labelledby="addPersonalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        <form id="addPersonalForm">
+            <div class="modal-header">
+            <h5 class="modal-title" id="addPersonalModalLabel">Añadir Personal</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+            <div id="addPersonalAlert"></div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                <label for="addNombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="addNombre" required>
+                </div>
+                <div class="col-md-4">
+                <label for="addApellidoPaterno" class="form-label">Apellido Paterno</label>
+                <input type="text" class="form-control" id="addApellidoPaterno" required>
+                </div>
+                <div class="col-md-4">
+                <label for="addApellidoMaterno" class="form-label">Apellido Materno</label>
+                <input type="text" class="form-control" id="addApellidoMaterno" required>
+                </div>
+                <div class="col-md-4">
+                <label for="addDni" class="form-label">DNI</label>
+                <input type="text" class="form-control" id="addDni" maxlength="8" required>
+                </div>
+                <div class="col-md-4">
+                <label for="addCelular" class="form-label">Celular</label>
+                <input type="text" class="form-control" id="addCelular" maxlength="9" required>
+                </div>
+                <div class="col-md-4">
+                <label for="addCorreo" class="form-label">Correo</label>
+                <input type="email" class="form-control" id="addCorreo" required>
+                </div>
+                <div class="col-md-6">
+                <label for="addUrlImg" class="form-label">Imagen (.jpg o .png)</label>
+                <input type="file" class="form-control" id="addUrlImg" accept=".jpg,.jpeg,.png">
+                </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    </div>
+
+    <!-- Modal USUARIO -->
+    <!-- Modal Editar Usuario -->
+<!-- Modal Editar Usuario -->
+<div class="modal fade" id="editUsuarioModal" tabindex="-1" aria-labelledby="editUsuarioModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editUsuarioModalLabel">Editar Usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div id="editUsuarioAlert"></div>
+
+        <!-- SECCIÓN 1: Datos generales (solo lectura) -->
+        <div class="mb-3">
+          <h6>Datos del Usuario</h6>
+          <p>ID: <span id="editUsuarioId"></span></p>
+          <input type="hidden" id="editUsuarioIdInput"> <!-- Input oculto para el ID -->
+          <p>Usuario: <span id="editUsuarioNombre"></span></p>
+          <p>Correo: <span id="editUsuarioCorreo"></span></p>
+        </div>
+        <hr>
+
+        <!-- SECCIÓN 2: Estado -->
+        <div class="mb-3">
+          <h6>Estado</h6>
+          <span id="editUsuarioEstado"></span>
+          <button type="button" id="btnActivarDesactivar" class="btn btn-sm ms-2"></button>
+        </div>
+        <hr>
+
+        <!-- SECCIÓN 3: Roles -->
+        <div class="mb-3">
+          <h6>Rol</h6>
+          <select id="editUsuarioRol" class="form-select mb-2"></select>
+          <button type="button" id="btnGuardarRol" class="btn btn-primary btn-sm">Guardar</button>
+        </div>
+        <hr>
+
+        <!-- SECCIÓN 4: Resetear contraseña -->
+        <div class="mb-3">
+          <h6>Resetear contraseña</h6>
+          <button type="button" id="btnResetear" class="btn btn-warning btn-sm">Resetear</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+    
+<!-- Modal para visualizar Producto -->
+<div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productoModalLabel">Detalle del Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body" id="productoModalBody">
+                <!-- Aquí se cargará la información del producto -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Producto -->
+<div class="modal fade" id="editProductoModal" tabindex="-1" aria-labelledby="editProductoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProductoModalLabel">Editar Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div id="editProductoAlert"></div>
+                <form id="editProductoForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="editNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="editNombre" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editStock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="editStock" required min="0">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="editColor" class="form-label">Color</label>
+                            <input type="text" class="form-control" id="editColor" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editTalla" class="form-label">Talla</label>
+                            <input type="text" class="form-control" id="editTalla" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPrecio" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="editPrecio" required min="0" step="0.01">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUrlImg" class="form-label">URL Imagen</label>
+                        <input type="text" class="form-control" id="editUrlImg">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Añadir Producto -->
+<div class="modal fade" id="addProductoModal" tabindex="-1" aria-labelledby="addProductoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="addProductoForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductoModalLabel">Añadir Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="addProductoAlert"></div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="addNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="addNombre" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="addStock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="addStock" required min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="addColor" class="form-label">Color</label>
+                            <input type="text" class="form-control" id="addColor" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="addTalla" class="form-label">Talla</label>
+                            <input type="text" class="form-control" id="addTalla" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="addPrecio" class="form-label">Precio</label>
+                            <input type="number" class="form-control" id="addPrecio" required min="0" step="0.01">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="addUrlImg" class="form-label">Imagen (.jpg o .png)</label>
+                            <input type="file" class="form-control" id="addUrlImg" accept=".jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Registrar Entrada -->
+    <div class="modal fade" id="entradaModal" tabindex="-1" aria-labelledby="entradaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="entradaForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="entradaModalLabel">Registrar Entrada de Producto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="entradaAlert"></div>
+                        <div class="mb-3">
+                            <label for="entradaProductoSelect" class="form-label">Producto</label>
+                            <select id="entradaProductoSelect" class="form-select" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="entradaCantidad" class="form-label">Cantidad</label>
+                            <input type="number" id="entradaCantidad" class="form-control" min="1" value="1" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Registrar Entrada</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Registrar Salida -->
+    <div class="modal fade" id="salidaModal" tabindex="-1" aria-labelledby="salidaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="salidaForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="salidaModalLabel">Registrar Salida de Producto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="salidaAlert"></div>
+                        <div class="mb-3">
+                            <label for="salidaProductoSelect" class="form-label">Producto</label>
+                            <select id="salidaProductoSelect" class="form-select" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <span id="stockDisponibleInfo" class="text-muted">Stock disponible: 0</span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salidaCantidad" class="form-label">Cantidad</label>
+                            <input type="number" id="salidaCantidad" class="form-control" min="1" value="1" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-warning">Registrar Salida</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+<!-- Modal Ver Sesión Activa -->
+<div class="modal fade" id="viewSesionActivaModal" tabindex="-1" aria-labelledby="viewSesionActivaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewSesionActivaModalLabel">Detalle de Sesión Activa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" id="viewSesionActivaBody">
+        <!-- Aquí se cargará el detalle -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/personal.js"></script>
+    <script src="../../assets/js/usuarios.js"></script>
+    <script src="../../assets/js/producto.js"></script>
+    <script src="../../assets/js/movimientos.js"></script>
+    <script src="../../assets/js/logsProducto.js"></script>
+    <script src="../../assets/js/logsSesionActivas.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Cargar datos del usuario
+        const nombre = localStorage.getItem("nombre") || "";
+        const apellido = localStorage.getItem("apellido") || "";
+        const idPersonal = localStorage.getItem("idPersonal") || "";
+        const rol = localStorage.getItem("rol") || "";
+
+        document.getElementById("userFullName").innerText = `${nombre} ${apellido}`;
+        document.getElementById("userId").innerText = idPersonal;
+        document.getElementById("userRole").innerText = rol;
+
+        // Logout
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.clear();
+            window.location.href = "../../index.html";
+        });
+
+        // Clics del menú para contenido dinámico
+        const menuLinks = document.querySelectorAll(".sidebar a[data-page]");
+        menuLinks.forEach(link => {
+            link.addEventListener("click", e => {
+                e.preventDefault();
+                const page = link.dataset.page;
+                const contentArea = document.getElementById("contentArea");
+
+                switch(page) {
+                    case "dashboard":
+                        contentArea.innerHTML = "<p>Bienvenido al panel principal.</p>";
+                        break;
+                    case "personal":
+                        fetchPersonals(); // Llama directamente a personal.js
+                        break;
+                    case "usuarios":
+                        fetchUsuarios(); // Llama a usuarios.js
+                        break;
+                    case "productos":
+                        fetchProductos(); // Llama a usuarios.js
+                        break;
+                    case "movimientos":
+                        fetchMovimientos();
+                        break;
+                    case "log":
+                        fetchLogsProducto();
+                        break;
+                    case "sesiones":
+                        fetchSesionesActivas();
+                        break;
+                    
+                    default:
+                        contentArea.innerHTML = "<p>Página no encontrada.</p>";
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>
