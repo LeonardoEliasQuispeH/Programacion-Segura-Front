@@ -17,7 +17,7 @@ function login() {
     fetch(`${API_BASE_URL}/captcha/register`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+            "Content-Type": "application/x-www-form-urlencoded"
         },
         body: "g-recaptcha-response=" + encodeURIComponent(captchaToken)
     })
